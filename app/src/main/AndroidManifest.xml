@@ -9,12 +9,11 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
-    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.RECORD_AUDIOc" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.RECORD_AUDIOc"/>
+        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -26,6 +25,18 @@
         android:theme="@style/Theme.MoBrain"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".client.ClientActivity"
+            android:exported="true"
+            android:screenOrientation="landscape"
+            android:label="@string/title_activity_client"
+            android:theme="@style/Theme.MoBrain">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".login.SelectModeActivity"
             android:exported="false"

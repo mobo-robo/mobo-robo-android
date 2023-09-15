@@ -1,6 +1,4 @@
 <resources>
     <string name="app_name">MoBrain</string>
     <string name="title_activity_client">ClientActivity</string>
-    <string name="title_activity_login">LoginActivity</string>
-    <string name="title_activity_select_mode">SelectModeActivity</string>
 </resources>

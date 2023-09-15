@@ -84,7 +84,6 @@ object Route {
     const val VIDEO_PREVIEW_FULL_ROUTE = "video_preview/{uri}"
     const val VIDEO_PREVIEW = "video_preview"
     const val VIDEO_PREVIEW_ARG = "uri"
-    const val SELECT_MODE_SCREEN="selectmodescreen"
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -115,6 +114,7 @@ fun RequestPermissions(cameraHelper: CameraHelper, navController: NavHostControl
                 composable(Route.VIDEO) {
                     VideoCaptureScreen(navController = navController, cameraHelper = cameraHelper, socket = socket)
                 }
+
                 composable(Route.VIDEO_PREVIEW_FULL_ROUTE) {
                     val uri = it.arguments?.getString(VIDEO_PREVIEW_ARG) ?: ""
                     VideoPreviewScreen(uri = uri)
