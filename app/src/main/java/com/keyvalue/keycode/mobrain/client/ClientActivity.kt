@@ -1,6 +1,7 @@
 package com.keyvalue.keycode.mobrain.client
 
 import ClientViewModel
+import EmptyVideoPreview
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.ImageLoader
 import coil.decode.SvgDecoder
+import com.keyvalue.keycode.mobrain.VideoPreviewScreen
 import com.keyvalue.keycode.mobrain.client.ui.theme.MoBrainTheme
 import com.keyvalue.keycode.mobrain.ui.theme.transparentBlack
 
@@ -85,6 +87,8 @@ private fun ControllerView(context: Context, clientViewModel: ClientViewModel) {
             .fillMaxSize()
             .background(color = Color.White)
     ) {
+        
+        EmptyVideoPreview(uri = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
         var offsetX by remember { mutableStateOf(0f) }
         var offsetY by remember { mutableStateOf(0f) }
         Column(

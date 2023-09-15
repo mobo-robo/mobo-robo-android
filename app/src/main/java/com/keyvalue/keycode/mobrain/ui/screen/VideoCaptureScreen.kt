@@ -37,14 +37,14 @@ import java.io.File
 import java.net.URI
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-var recording: Recording? =  null
+
+var recording: Recording? = null
 val recordingStarted: MutableState<Boolean> = mutableStateOf(false)
 
 @RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun VideoCaptureScreen(cameraHelper: CameraHelper, navController: NavController,socket:Socket)
-{
+fun VideoCaptureScreen(cameraHelper: CameraHelper, navController: NavController, socket: Socket) {
 
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -90,11 +90,13 @@ fun VideoCaptureScreen(cameraHelper: CameraHelper, navController: NavController,
             AndroidView(
                 factory = { previewView },
                 modifier = Modifier.fillMaxSize()
-            ){
+            ) {
                 videoCapture.value?.let { it1 ->
-                    if(!recordingStarted.value)
-                    manageRecordingState(navController,recordingStarted,
-                        it1,context,cameraHelper,socket)
+                    if (!recordingStarted.value)
+                        manageRecordingState(
+                            navController, recordingStarted,
+                            it1, context, cameraHelper, socket
+                        )
                 }
 
             }
@@ -121,7 +123,8 @@ fun manageRecordingState(
 
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                recording = startRecodring(cameraHelper,context,videoCapture,mediaDir,audioEnabled,navController,socket)
+                recording =
+                    startRecodring(cameraHelper, context, videoCapture, mediaDir, audioEnabled, navController, socket)
             }
         }
     } else {
@@ -139,24 +142,25 @@ fun startRecodring(
     mediaDir: File?,
 
     audioEnabled: MutableState<Boolean>, navController: NavController, socket: Socket
-): Recording? { val recording =  cameraHelper.startRecordingVideo(
-    context = context,
-    filenameFormat = "yyyy-MM-dd-HH-mm-ss-SSS",
-    videoCapture = videoCapture,
-    outputDirectory = if (mediaDir != null && mediaDir.exists()) mediaDir else context.cacheDir,
-    executor = context.mainExecutor,
-    audioEnabled = audioEnabled.value
-) { event ->
-    if (event is VideoRecordEvent.Finalize) {
-        val uri = event.outputResults.outputUri
-        if (uri != Uri.EMPTY) {
-            val uriEncoded = URLEncoder.encode(
-                uri.toString(),
-                StandardCharsets.UTF_8.toString()
-            )
-            //navController.navigate("${Route.VIDEO_PREVIEW}/$uriEncoded")
-            socket.emit("data",File(CameraHelper.path).readBytes())
-Log.d("POPE","uri->" + uriEncoded)
+): Recording? {
+    val recording = cameraHelper.startRecordingVideo(
+        context = context,
+        filenameFormat = "yyyy-MM-dd-HH-mm-ss-SSS",
+        videoCapture = videoCapture,
+        outputDirectory = if (mediaDir != null && mediaDir.exists()) mediaDir else context.cacheDir,
+        executor = context.mainExecutor,
+        audioEnabled = audioEnabled.value
+    ) { event ->
+        if (event is VideoRecordEvent.Finalize) {
+            val uri = event.outputResults.outputUri
+            if (uri != Uri.EMPTY) {
+                val uriEncoded = URLEncoder.encode(
+                    uri.toString(),
+                    StandardCharsets.UTF_8.toString()
+                )
+                //navController.navigate("${Route.VIDEO_PREVIEW}/$uriEncoded")
+                socket.emit("data", File(CameraHelper.path).readBytes())
+                Log.d("POPE", "uri->" + uriEncoded)
 
                 manageRecordingState(
                     navController,
@@ -168,22 +172,20 @@ Log.d("POPE","uri->" + uriEncoded)
                 )
 
 
+            }
+        } else if (event is VideoRecordEvent.Start) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                manageRecordingState(
+                    navController,
+                    audioEnabled,
+                    videoCapture,
+                    context,
+                    cameraHelper,
+                    socket
+                )
+            }, 1000)
         }
     }
-    else if(event is VideoRecordEvent.Start)
-    {
-        Handler(Looper.getMainLooper()).postDelayed({
-            manageRecordingState(
-                navController,
-                audioEnabled,
-                videoCapture,
-                context,
-                cameraHelper,
-                socket
-            )
-        }, 1000)
-    }
-}
 
     return recording
 }

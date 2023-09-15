@@ -1,4 +1,4 @@
-package com.keyvalue.keycode.mobrain.ui.theme
+package com.keyvalue.keycode.mobrain.login.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -16,13 +16,13 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = orangeButton,
+    primary = Purple80,
     secondary = PurpleGrey80,
     tertiary = Pink80
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = orangeButton,
+    primary = Purple40,
     secondary = PurpleGrey40,
     tertiary = Pink40
 

@@ -9,27 +9,32 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.RECORD_AUDIOc"/>
-        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIOc" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:usesCleartextTraffic="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MoBrain"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".client.ClientActivity"
+            android:name=".login.SelectModeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_select_mode"
+            android:theme="@style/Theme.MoBrain" />
+        <activity
+            android:name=".login.LoginActivity"
             android:exported="true"
-            android:screenOrientation="landscape"
-            android:label="@string/title_activity_client"
+            android:label="@string/title_activity_login"
             android:theme="@style/Theme.MoBrain">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,17 +42,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".client.ClientActivity"
+            android:exported="true"
+            android:label="@string/title_activity_client"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.MoBrain"></activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.MoBrain">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.MoBrain"></activity>
     </application>
 
 </manifest>
