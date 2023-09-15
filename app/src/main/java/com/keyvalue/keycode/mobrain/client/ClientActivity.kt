@@ -46,16 +46,19 @@ class ClientActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
+
         setContent {
+            val clientViewModel: ClientViewModel = viewModel()
+            clientViewModel.setContext(context = LocalContext.current)
             MoBrainTheme {
                 // A surface container using the 'background' color from the theme
-                ClientRoot()
+                ClientRoot(clientViewModel)
             }
         }
     }
 
     @Composable
-    private fun ClientRoot(clientViewModel: ClientViewModel = viewModel()) {
+    private fun ClientRoot(clientViewModel: ClientViewModel) {
         val gameUiState by clientViewModel.uiState.collectAsState()
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             val context = LocalContext.current
@@ -87,7 +90,7 @@ private fun ControllerView(context: Context, clientViewModel: ClientViewModel) {
             .fillMaxSize()
             .background(color = Color.White)
     ) {
-        
+
         EmptyVideoPreview(uri = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
         var offsetX by remember { mutableStateOf(0f) }
         var offsetY by remember { mutableStateOf(0f) }

@@ -1,13 +1,15 @@
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class ClientViewModel : ViewModel() {
+class ClientViewModel() : ViewModel() {
+    private  var context: Context?=null;
     private val _uiState = MutableStateFlow(ClientUiState())
     val uiState: StateFlow<ClientUiState> = _uiState.asStateFlow()
-    private val controllerSocketService: ControllerSocketService = ControllerSocketService();
+    private lateinit var controllerSocketService: ControllerSocketService
 
     fun turnOnOffFlash() {
         _uiState.update { currentState ->
@@ -15,7 +17,13 @@ class ClientViewModel : ViewModel() {
                 turnOnFlash = !currentState.turnOnFlash
             )
         }
+
         controllerSocketService.updateLightStatus(uiState.value.turnOnFlash);
+    }
+
+   fun setContext(context: Context) {
+       this.context=context;
+        controllerSocketService = ControllerSocketService(context = context)
     }
 
     fun turnOnOffLight() {

@@ -22,11 +22,17 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 
+
 class LoginViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(LoginUiState(isLoading = false))
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
     private lateinit var apiService: ApiService;
 
+
+//   fun session()
+//    {
+//        PreferenceHelper.getSharedPreferenceString(context,PreferenceHelper.DEVICE_ID,it)
+//    }
 
     fun login(hash: String,context: Context) {
         _uiState.update { currentState ->
