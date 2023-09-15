@@ -1,12 +1,16 @@
 import android.content.Context
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.keyvalue.keycode.mobrain.client.VideoCallback
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.io.File
 
 class ClientViewModel() : ViewModel() {
-    private  var context: Context?=null;
+    var videoState: MutableStateFlow<File?>? = MutableStateFlow(null)
+    private var context: Context? = null;
     private val _uiState = MutableStateFlow(ClientUiState())
     val uiState: StateFlow<ClientUiState> = _uiState.asStateFlow()
     private lateinit var controllerSocketService: ControllerSocketService
@@ -21,9 +25,14 @@ class ClientViewModel() : ViewModel() {
         controllerSocketService.updateLightStatus(uiState.value.turnOnFlash);
     }
 
-   fun setContext(context: Context) {
-       this.context=context;
-        controllerSocketService = ControllerSocketService(context = context)
+    fun setContext(context: Context) {
+        this.context = context;
+        controllerSocketService = ControllerSocketService(context = context, object : VideoCallback {
+            override suspend fun onVideoReceived(file: File) {
+                videoState?.emit(file)
+            }
+
+        })
     }
 
     fun turnOnOffLight() {

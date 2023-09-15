@@ -2,10 +2,12 @@ package com.keyvalue.keycode.mobrain.client
 
 import ClientViewModel
 import EmptyVideoPreview
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -21,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +43,9 @@ import coil.decode.SvgDecoder
 import com.keyvalue.keycode.mobrain.VideoPreviewScreen
 import com.keyvalue.keycode.mobrain.client.ui.theme.MoBrainTheme
 import com.keyvalue.keycode.mobrain.ui.theme.transparentBlack
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ClientActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,6 +89,7 @@ fun JoyStick(name: String, modifier: Modifier = Modifier, context: Context, clie
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 private fun ControllerView(context: Context, clientViewModel: ClientViewModel) {
     Box(
@@ -90,8 +97,16 @@ private fun ControllerView(context: Context, clientViewModel: ClientViewModel) {
             .fillMaxSize()
             .background(color = Color.White)
     ) {
+val uri = remember {
+    mutableStateOf("")
+}
+LaunchedEffect(Unit ){
 
-        EmptyVideoPreview(uri = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
+}
+       if(clientViewModel.videoState!=null&&clientViewModel.videoState?.collectAsState()!=null)  EmptyVideoPreview(uri = Uri.parse(clientViewModel.videoState?.collectAsState()?.value?.path).toString())
+
+
+
         var offsetX by remember { mutableStateOf(0f) }
         var offsetY by remember { mutableStateOf(0f) }
         Column(

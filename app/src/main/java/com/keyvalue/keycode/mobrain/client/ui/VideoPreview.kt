@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -9,17 +10,23 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.StyledPlayerView
+import java.io.File
 
 @Composable
 fun EmptyVideoPreview(
-    uri: String
-) {
+    uri: String,
+
+    ) {
     val context = LocalContext.current
 
     val exoPlayer = remember(context) {
+        Log.d("URI PATH", uri);
+        var file: File = File(uri)
+        Log.d("ISEXISTS", file.exists().toString());
         ExoPlayer.Builder(context).build().apply {
             setMediaItem(MediaItem.fromUri(uri))
             prepare()
+
 
 
         }
