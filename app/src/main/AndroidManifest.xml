@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.VIBRATE" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -11,7 +10,6 @@
 
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.RECORD_AUDIOc"/>
         <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
@@ -20,10 +18,10 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:usesCleartextTraffic="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MoBrain"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name=".client.ClientActivity"
@@ -38,9 +36,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".login.SelectModeActivity"
+            android:exported="false"
+            android:label="select mode"
+            android:theme="@style/Theme.MoBrain" />
+        <activity
+            android:name=".login.LoginActivity"
             android:exported="true"
-            android:label="@string/app_name"
+            android:label="login"
             android:theme="@style/Theme.MoBrain">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -48,6 +51,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MoBrain"></activity>
     </application>
 
 </manifest>
