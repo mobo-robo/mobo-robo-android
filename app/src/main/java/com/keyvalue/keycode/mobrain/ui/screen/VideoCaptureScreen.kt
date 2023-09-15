@@ -30,10 +30,11 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionsRequired
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.keyvalue.keycode.mobrain.R
-import com.keyvalue.keycode.mobrain.Route
 import com.keyvalue.keycode.mobrain.camera.CameraHelper
 import com.keyvalue.keycode.mobrain.createVideoCaptureUseCase
+import io.socket.client.Socket
 import java.io.File
+import java.net.URI
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 var recording: Recording? =  null
@@ -42,7 +43,7 @@ val recordingStarted: MutableState<Boolean> = mutableStateOf(false)
 @RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun VideoCaptureScreen(cameraHelper: CameraHelper, navController: NavController)
+fun VideoCaptureScreen(cameraHelper: CameraHelper, navController: NavController,socket:Socket)
 {
 
     val context = LocalContext.current
@@ -93,7 +94,7 @@ fun VideoCaptureScreen(cameraHelper: CameraHelper, navController: NavController)
                 videoCapture.value?.let { it1 ->
                     if(!recordingStarted.value)
                     manageRecordingState(navController,recordingStarted,
-                        it1,context,cameraHelper)
+                        it1,context,cameraHelper,socket)
                 }
 
             }
@@ -102,9 +103,13 @@ fun VideoCaptureScreen(cameraHelper: CameraHelper, navController: NavController)
 
 }
 
-fun manageRecordingState(navController: NavController,
+fun manageRecordingState(
+    navController: NavController,
     audioEnabled: MutableState<Boolean>,
-    videoCapture: VideoCapture<Recorder>, context: Context, cameraHelper: CameraHelper
+    videoCapture: VideoCapture<Recorder>,
+    context: Context,
+    cameraHelper: CameraHelper,
+    socket: Socket
 ) {
     val mediaDir = context.externalCacheDirs.firstOrNull()?.let {
         File(it, context.getString(R.string.app_name)).apply { mkdirs() }
@@ -116,7 +121,7 @@ fun manageRecordingState(navController: NavController,
 
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                recording = startRecodring(cameraHelper,context,videoCapture,mediaDir,audioEnabled,navController)
+                recording = startRecodring(cameraHelper,context,videoCapture,mediaDir,audioEnabled,navController,socket)
             }
         }
     } else {
@@ -133,7 +138,8 @@ fun startRecodring(
     videoCapture: VideoCapture<Recorder>,
     mediaDir: File?,
 
-    audioEnabled: MutableState<Boolean>,  navController: NavController): Recording? { val recording =  cameraHelper.startRecordingVideo(
+    audioEnabled: MutableState<Boolean>, navController: NavController, socket: Socket
+): Recording? { val recording =  cameraHelper.startRecordingVideo(
     context = context,
     filenameFormat = "yyyy-MM-dd-HH-mm-ss-SSS",
     videoCapture = videoCapture,
@@ -149,8 +155,17 @@ fun startRecodring(
                 StandardCharsets.UTF_8.toString()
             )
             //navController.navigate("${Route.VIDEO_PREVIEW}/$uriEncoded")
+            socket.emit("data",File(CameraHelper.path).readBytes())
 Log.d("POPE","uri->" + uriEncoded)
-                manageRecordingState(navController,audioEnabled,videoCapture,context,cameraHelper)
+
+                manageRecordingState(
+                    navController,
+                    audioEnabled,
+                    videoCapture,
+                    context,
+                    cameraHelper,
+                    socket
+                )
 
 
         }
@@ -158,7 +173,14 @@ Log.d("POPE","uri->" + uriEncoded)
     else if(event is VideoRecordEvent.Start)
     {
         Handler(Looper.getMainLooper()).postDelayed({
-            manageRecordingState(navController,audioEnabled,videoCapture,context,cameraHelper)
+            manageRecordingState(
+                navController,
+                audioEnabled,
+                videoCapture,
+                context,
+                cameraHelper,
+                socket
+            )
         }, 1000)
     }
 }

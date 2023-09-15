@@ -2,9 +2,9 @@ package com.keyvalue.keycode.mobrain
 
 import android.Manifest
 import android.content.Context
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -15,34 +15,20 @@ import androidx.camera.video.FallbackStrategy
 import androidx.camera.video.Quality
 import androidx.camera.video.QualitySelector
 import androidx.camera.video.Recorder
-import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
-import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -57,9 +43,9 @@ import com.keyvalue.keycode.mobrain.Route.VIDEO_PREVIEW_ARG
 import com.keyvalue.keycode.mobrain.camera.CameraHelper
 import com.keyvalue.keycode.mobrain.ui.screen.VideoCaptureScreen
 import com.keyvalue.keycode.mobrain.ui.theme.MoBrainTheme
-import java.io.File
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
+import io.socket.client.IO
+import io.socket.client.Socket
+import java.lang.Exception
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -69,6 +55,14 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val socket = IO.socket("http://192.168.4.245:3000")
+        try {
+            socket.connect()
+
+        }catch (e:Exception)
+        {
+            Log.d("POPE","EXC" + e)
+        }
         setContent {
             MoBrainTheme {
                 val navController = rememberNavController()
@@ -76,7 +70,7 @@ Surface(
         modifier = Modifier.fillMaxSize(),
     color = MaterialTheme.colorScheme.background
 ) {
-    RequestPermissions(cameraHelper,navController)
+    RequestPermissions(cameraHelper,navController,socket)
 
 }
 
@@ -95,7 +89,7 @@ object Route {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun RequestPermissions(cameraHelper: CameraHelper, navController: NavHostController)
+fun RequestPermissions(cameraHelper: CameraHelper, navController: NavHostController, socket: Socket)
 {
     val permissionState = rememberMultiplePermissionsState(
         permissions = listOf(
@@ -120,7 +114,7 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         startDestination = Route.VIDEO
     ) {
         composable(Route.VIDEO) {
-            VideoCaptureScreen(navController = navController, cameraHelper = cameraHelper)
+            VideoCaptureScreen(navController = navController, cameraHelper = cameraHelper, socket = socket)
         }
 
         composable(Route.VIDEO_PREVIEW_FULL_ROUTE) {

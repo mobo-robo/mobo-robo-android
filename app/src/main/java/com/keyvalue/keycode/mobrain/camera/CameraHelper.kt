@@ -16,7 +16,9 @@ import java.util.Locale
 import java.util.concurrent.Executor
 
 class CameraHelper {
-
+companion object{
+    var path = ""
+}
     fun startRecordingVideo(
         context: Context,
         filenameFormat: String,
@@ -30,6 +32,7 @@ class CameraHelper {
             outputDirectory,
             "feed" + ".mp4"
         )
+        path = videoFile.path
         val outputOptions = FileOutputOptions.Builder(videoFile).build()
         return videoCapture.output
             .prepareRecording(context, outputOptions)
