@@ -1,6 +1,7 @@
 package com.keyvalue.keycode.mobrain.ui.screen
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Build
@@ -34,6 +35,7 @@ import com.keyvalue.keycode.mobrain.camera.CameraHelper
 import com.keyvalue.keycode.mobrain.createVideoCaptureUseCase
 import io.socket.client.Socket
 import java.io.File
+import java.lang.Exception
 import java.net.URI
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -41,6 +43,7 @@ import java.nio.charset.StandardCharsets
 var recording: Recording? = null
 val recordingStarted: MutableState<Boolean> = mutableStateOf(false)
 
+@SuppressLint("SuspiciousIndentation")
 @RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -159,7 +162,16 @@ fun startRecodring(
                     StandardCharsets.UTF_8.toString()
                 )
                 //navController.navigate("${Route.VIDEO_PREVIEW}/$uriEncoded")
-                socket.emit("data", File(CameraHelper.path).readBytes())
+                try {
+                socket.emit("stream", File(CameraHelper.path).readBytes()).on("onStream:pCrSHUnh37rQWjtAB5Q9Q"){it->
+                    Log.d("POPE","par->" + it)
+                }
+
+            }catch (e:Exception)
+            {
+                Log.d("POPE","EX->" +e)
+
+            }
                 Log.d("POPE", "uri->" + uriEncoded)
 
                 manageRecordingState(

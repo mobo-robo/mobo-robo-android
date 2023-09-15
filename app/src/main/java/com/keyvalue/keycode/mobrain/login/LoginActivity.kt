@@ -47,6 +47,7 @@ import com.keyvalue.keycode.mobrain.Route
 import com.keyvalue.keycode.mobrain.VideoPreviewScreen
 import com.keyvalue.keycode.mobrain.ui.screen.VideoCaptureScreen
 import com.keyvalue.keycode.mobrain.ui.theme.orangeButton
+import com.keyvalue.keycode.mobrain.util.PreferenceHelper
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -133,7 +134,8 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 onClick = {
-                    loginViewModel.login(password.text);
+                    PreferenceHelper.setSharedPreferenceString(context,PreferenceHelper.SECRET,password.text)
+                    loginViewModel.login(password.text,context);
 
                     // Perform authentication logic here
                     val userEmail = email.text

@@ -1,9 +1,11 @@
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.keyvalue.keycode.mobrain.login.LoginUiState
 import com.keyvalue.keycode.mobrain.login.model.LoginResponse
+import com.keyvalue.keycode.mobrain.util.PreferenceHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +28,7 @@ class LoginViewModel : ViewModel() {
     private lateinit var apiService: ApiService;
 
 
-    fun login(hash: String) {
+    fun login(hash: String,context: Context) {
         _uiState.update { currentState ->
             currentState.copy(
                 isLoading = true
@@ -46,8 +48,9 @@ class LoginViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     Log.d("response", response.body().toString());
                     val response = response.body()
-                    response?.data?.secret?.let {
-                        Log.d("secret", it)
+                    response?.data?.deviceId?.let {
+                        Log.d("deviceId", it)
+                        PreferenceHelper.setSharedPreferenceString(context,PreferenceHelper.DEVICE_ID,it)
                     };
                     // Process the data here
                 } else {
