@@ -59,20 +59,19 @@ class MainActivity : ComponentActivity() {
         try {
             socket.connect()
 
-        }catch (e:Exception)
-        {
-            Log.d("POPE","EXC" + e)
+        } catch (e: Exception) {
+            Log.d("POPE", "EXC" + e)
         }
         setContent {
             MoBrainTheme {
                 val navController = rememberNavController()
-Surface(
-        modifier = Modifier.fillMaxSize(),
-    color = MaterialTheme.colorScheme.background
-) {
-    RequestPermissions(cameraHelper,navController,socket)
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    RequestPermissions(cameraHelper, navController, socket)
 
-}
+                }
 
 
             }
@@ -89,8 +88,7 @@ object Route {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun RequestPermissions(cameraHelper: CameraHelper, navController: NavHostController, socket: Socket)
-{
+fun RequestPermissions(cameraHelper: CameraHelper, navController: NavHostController, socket: Socket) {
     val permissionState = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.CAMERA,
@@ -108,26 +106,25 @@ fun RequestPermissions(cameraHelper: CameraHelper, navController: NavHostControl
         permissionsNotGrantedContent = { /* ... */ },
         permissionsNotAvailableContent = { /* ... */ }
     ) {
-if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-    NavHost(
-        navController = navController,
-        startDestination = Route.VIDEO
-    ) {
-        composable(Route.VIDEO) {
-            VideoCaptureScreen(navController = navController, cameraHelper = cameraHelper, socket = socket)
-        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            NavHost(
+                navController = navController,
+                startDestination = Route.VIDEO
+            ) {
+                composable(Route.VIDEO) {
+                    VideoCaptureScreen(navController = navController, cameraHelper = cameraHelper, socket = socket)
+                }
 
-        composable(Route.VIDEO_PREVIEW_FULL_ROUTE) {
-            val uri = it.arguments?.getString(VIDEO_PREVIEW_ARG) ?: ""
-            VideoPreviewScreen(uri = uri)
+                composable(Route.VIDEO_PREVIEW_FULL_ROUTE) {
+                    val uri = it.arguments?.getString(VIDEO_PREVIEW_ARG) ?: ""
+                    VideoPreviewScreen(uri = uri)
+                }
+            }
         }
     }
-}
-    }
 
 
 }
-
 
 
 @RequiresApi(Build.VERSION_CODES.P)
