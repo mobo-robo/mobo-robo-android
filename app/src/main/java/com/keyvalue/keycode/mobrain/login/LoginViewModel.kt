@@ -22,7 +22,6 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 
-
 class LoginViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(LoginUiState(isLoading = false))
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
@@ -34,7 +33,7 @@ class LoginViewModel : ViewModel() {
 //        PreferenceHelper.getSharedPreferenceString(context,PreferenceHelper.DEVICE_ID,it)
 //    }
 
-    fun login(hash: String,context: Context) {
+    fun login(hash: String, context: Context) {
         _uiState.update { currentState ->
             currentState.copy(
                 isLoading = true
@@ -43,7 +42,7 @@ class LoginViewModel : ViewModel() {
 
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://d76e-103-181-238-106.ngrok.io")
+            .baseUrl("https://6224-103-181-238-106.ngrok.io")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         apiService = retrofit.create(ApiService::class.java)
@@ -56,7 +55,7 @@ class LoginViewModel : ViewModel() {
                     val response = response.body()
                     response?.data?.deviceId?.let {
                         Log.d("deviceId", it)
-                        PreferenceHelper.setSharedPreferenceString(context,PreferenceHelper.DEVICE_ID,it)
+                        PreferenceHelper.setSharedPreferenceString(context, PreferenceHelper.DEVICE_ID, it)
                     };
                     // Process the data here
                 } else {

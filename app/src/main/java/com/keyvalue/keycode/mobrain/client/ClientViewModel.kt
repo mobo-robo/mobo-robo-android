@@ -60,4 +60,8 @@ class ClientViewModel() : ViewModel() {
         }
         controllerSocketService.updateMusicStatus(uiState.value.turnOnMusic);
     }
+
+    fun sendControllerState(x: Float, y: Float,event:String) {
+        controllerSocketService.sendControllerData(x, y,event)
+    }
 }

@@ -97,14 +97,15 @@ private fun ControllerView(context: Context, clientViewModel: ClientViewModel) {
             .fillMaxSize()
             .background(color = Color.White)
     ) {
-val uri = remember {
-    mutableStateOf("")
-}
-LaunchedEffect(Unit ){
+        val uri = remember {
+            mutableStateOf("")
+        }
+        LaunchedEffect(Unit) {
 
-}
-       if(clientViewModel.videoState!=null&&clientViewModel.videoState?.collectAsState()!=null)  EmptyVideoPreview(uri = Uri.parse(clientViewModel.videoState?.collectAsState()?.value?.path).toString())
-
+        }
+//        if (clientViewModel.videoState != null && clientViewModel.videoState?.collectAsState() != null) EmptyVideoPreview(
+//            uri = Uri.parse(clientViewModel.videoState?.collectAsState()?.value?.path).toString()
+//        )
 
 
         var offsetX by remember { mutableStateOf(0f) }
@@ -125,13 +126,15 @@ LaunchedEffect(Unit ){
                     size = 150.dp,
                     dotSize = 60.dp,
                 ) { x: Float, y: Float ->
-                    Log.wtf("JoyStick", "$x, $y")
+
+                    clientViewModel.sendControllerState(x, y, "direction")
                 }
                 JoyStick(
                     Modifier.padding(0.dp),
                     size = 150.dp,
                     dotSize = 60.dp,
                 ) { x: Float, y: Float ->
+                    clientViewModel.sendControllerState(x, y, "camera")
                     Log.wtf("JoyStick", "$x, $y")
                 }
             }

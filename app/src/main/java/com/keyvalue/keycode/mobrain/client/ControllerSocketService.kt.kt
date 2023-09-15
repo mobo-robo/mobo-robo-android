@@ -17,12 +17,15 @@ import java.io.InputStream
 import java.io.OutputStream
 
 
-class ControllerSocketService(var context: Context,var callback: VideoCallback) {
+class ControllerSocketService(var context: Context, var callback: VideoCallback) {
     var socket: Socket? = null;
 
-    fun sendControllerData(x: Double, y: Double) {
+    fun sendControllerData(x: Float, y: Float, event: String) {
+
         val data = mapOf("x" to x, "y" to y)
-        socket?.emit("joystick", data);
+        Log.d("DATA SENDING", data.toString());
+
+        socket?.emit("control","DATAAA");
     }
 
     init {
@@ -43,17 +46,6 @@ class ControllerSocketService(var context: Context,var callback: VideoCallback) 
 
             }
             ?.on("light") { parameters -> // do something on recieving a 'foo' event
-
-            }?.on("onStream:$deviceId") { parameters -> // do something on recieving a 'foo' event
-                Log.d("STREAM DATA", "stream");
-                try {
-                    var data: ByteArray = (parameters.get(0) as JSONObject).get("content") as ByteArray
-                     CoroutineScope(Dispatchers.IO).launch {                    byteArrayToFile(data);
-                     }
-//                    val input: InputStream = ByteArrayInputStream(data)
-                } catch (e: Exception) {
-                    Log.d("data parsing error", "")
-                }
 
             }
         socket?.emit("stream", "Test");
