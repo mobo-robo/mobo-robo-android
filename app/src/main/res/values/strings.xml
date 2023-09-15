@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MoBrain</string>
+    <string name="title_activity_client">ClientActivity</string>
 </resources>

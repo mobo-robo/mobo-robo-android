@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -22,6 +25,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MoBrain"
         tools:targetApi="31">
+        <activity
+            android:name=".client.ClientActivity"
+            android:exported="true"
+            android:screenOrientation="landscape"
+            android:label="@string/title_activity_client"
+            android:theme="@style/Theme.MoBrain">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"
