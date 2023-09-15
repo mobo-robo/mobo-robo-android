@@ -40,12 +40,12 @@
         <activity
             android:name=".login.SelectModeActivity"
             android:exported="false"
-            android:label="@string/title_activity_select_mode"
+            android:label="select mode"
             android:theme="@style/Theme.MoBrain" />
         <activity
             android:name=".login.LoginActivity"
             android:exported="true"
-            android:label="@string/title_activity_login"
+            android:label="login"
             android:theme="@style/Theme.MoBrain">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
