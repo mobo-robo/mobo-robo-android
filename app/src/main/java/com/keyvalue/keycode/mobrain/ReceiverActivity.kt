@@ -60,24 +60,32 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 var mserialPort: UsbSerialDevice? = null
+
 class ReceiverActivity : ComponentActivity() {
 
     val cameraHelper: CameraHelper = CameraHelper()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val deviceIdHeader = listOf(PreferenceHelper.getSharedPreferenceString(this,PreferenceHelper.DEVICE_ID))
-        val deviceSecret = listOf(PreferenceHelper.getSharedPreferenceString(this,PreferenceHelper.SECRET))
-        val headerMap = mutableMapOf<String,List<String>>()
-        headerMap.put("deviceid",deviceIdHeader)
-        headerMap.put("secret",deviceSecret)
-        val socket = IO.socket("http://192.168.4.245:3000",IO.Options.builder().setExtraHeaders(headerMap).build())
+        val deviceIdHeader = listOf(PreferenceHelper.getSharedPreferenceString(this, PreferenceHelper.DEVICE_ID))
+        val deviceSecret = listOf(PreferenceHelper.getSharedPreferenceString(this, PreferenceHelper.SECRET))
+        val headerMap = mutableMapOf<String, List<String>>()
+        headerMap.put("deviceid", deviceIdHeader)
+        headerMap.put("secret", deviceSecret)
+        val socket = IO.socket("http://192.168.4.245:3000", IO.Options.builder().setExtraHeaders(headerMap).build())
         try {
-            socket.connect()
+            socket.connect().on(Socket.EVENT_CONNECT) {
+                android.util.Log.d("event recived", it.toString());
+
+            };
+            socket.on("onControl:${deviceIdHeader.get(0)}") { parameters ->
+                Log.d("controlle recevied", parameters.toString());
+            };
 
         } catch (e: Exception) {
             Log.d("POPE", "EXC" + e)
         }
+
         setContent {
             MoBrainTheme {
                 val navController = rememberNavController()
@@ -188,19 +196,19 @@ suspend fun Context.getCameraProvider(): ProcessCameraProvider = suspendCoroutin
     }
 }
 
-fun setUpUSB(context: Context)
-{   val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
+fun setUpUSB(context: Context) {
+    val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
 
     val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         //Broadcast Receiver to automatically start and stop the Serial connection.
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == ACTION_USB_PERMISSION) {
                 val granted = intent.extras!!.getBoolean(UsbManager.EXTRA_PERMISSION_GRANTED)
-               val device = intent
-                   .getParcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)!! as UsbDevice
+                val device = intent
+                    .getParcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)!! as UsbDevice
                 if (granted) {
-                   var connection = usbManager.openDevice(device)
-                  var  serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection)
+                    var connection = usbManager.openDevice(device)
+                    var serialPort = UsbSerialDevice.createUsbSerialDevice(device, connection)
                     if (serialPort != null) {
                         if (serialPort.open()) { //Set Serial Connection Parameters.
                             serialPort.setBaudRate(9600)
@@ -208,7 +216,7 @@ fun setUpUSB(context: Context)
                             serialPort.setStopBits(UsbSerialInterface.STOP_BITS_1)
                             serialPort.setParity(UsbSerialInterface.PARITY_NONE)
                             serialPort.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF)
-                            AurdinoHelpers.mSerialPort =serialPort
+                            AurdinoHelpers.mSerialPort = serialPort
 
                         } else {
                             Log.d("SERIAL", "PORT NOT OPEN")
@@ -225,13 +233,12 @@ fun setUpUSB(context: Context)
     context.registerReceiver(broadcastReceiver, IntentFilter(ACTION_USB_PERMISSION))
     val usbDevices: HashMap<String, UsbDevice> = usbManager.getDeviceList()
     if (!usbDevices.isEmpty()) {
-        for(entry in usbDevices)
-        {
+        for (entry in usbDevices) {
             val pi = PendingIntent.getBroadcast(
                 context, 0,
                 Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE
             )
-            usbManager.requestPermission(entry.value,pi)
+            usbManager.requestPermission(entry.value, pi)
         }
     }
 }

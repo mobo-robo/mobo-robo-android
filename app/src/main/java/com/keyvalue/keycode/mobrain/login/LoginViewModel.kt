@@ -28,7 +28,12 @@ class LoginViewModel : ViewModel() {
     private lateinit var apiService: ApiService;
 
 
-    fun login(hash: String,context: Context) {
+//   fun session()
+//    {
+//        PreferenceHelper.getSharedPreferenceString(context,PreferenceHelper.DEVICE_ID,it)
+//    }
+
+    fun login(hash: String, context: Context) {
         _uiState.update { currentState ->
             currentState.copy(
                 isLoading = true
@@ -37,7 +42,7 @@ class LoginViewModel : ViewModel() {
 
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://81da-103-181-238-106.ngrok.io")
+            .baseUrl("https://6224-103-181-238-106.ngrok.io")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         apiService = retrofit.create(ApiService::class.java)
@@ -50,7 +55,7 @@ class LoginViewModel : ViewModel() {
                     val response = response.body()
                     response?.data?.deviceId?.let {
                         Log.d("deviceId", it)
-                        PreferenceHelper.setSharedPreferenceString(context,PreferenceHelper.DEVICE_ID,it)
+                        PreferenceHelper.setSharedPreferenceString(context, PreferenceHelper.DEVICE_ID, it)
                     };
                     // Process the data here
                 } else {

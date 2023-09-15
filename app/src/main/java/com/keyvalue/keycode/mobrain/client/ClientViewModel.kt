@@ -1,13 +1,19 @@
+import android.content.Context
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.keyvalue.keycode.mobrain.client.VideoCallback
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.io.File
 
-class ClientViewModel : ViewModel() {
+class ClientViewModel() : ViewModel() {
+    var videoState: MutableStateFlow<File?>? = MutableStateFlow(null)
+    private var context: Context? = null;
     private val _uiState = MutableStateFlow(ClientUiState())
     val uiState: StateFlow<ClientUiState> = _uiState.asStateFlow()
-    private val controllerSocketService: ControllerSocketService = ControllerSocketService();
+    private lateinit var controllerSocketService: ControllerSocketService
 
     fun turnOnOffFlash() {
         _uiState.update { currentState ->
@@ -15,7 +21,18 @@ class ClientViewModel : ViewModel() {
                 turnOnFlash = !currentState.turnOnFlash
             )
         }
+
         controllerSocketService.updateLightStatus(uiState.value.turnOnFlash);
+    }
+
+    fun setContext(context: Context) {
+        this.context = context;
+        controllerSocketService = ControllerSocketService(context = context, object : VideoCallback {
+            override suspend fun onVideoReceived(file: File) {
+                videoState?.emit(file)
+            }
+
+        })
     }
 
     fun turnOnOffLight() {
@@ -42,5 +59,9 @@ class ClientViewModel : ViewModel() {
             )
         }
         controllerSocketService.updateMusicStatus(uiState.value.turnOnMusic);
+    }
+
+    fun sendControllerState(x: Float, y: Float,event:String) {
+        controllerSocketService.sendControllerData(x, y,event)
     }
 }

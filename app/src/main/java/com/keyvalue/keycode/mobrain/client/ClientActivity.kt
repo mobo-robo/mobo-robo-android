@@ -2,10 +2,12 @@ package com.keyvalue.keycode.mobrain.client
 
 import ClientViewModel
 import EmptyVideoPreview
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -21,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,22 +43,28 @@ import coil.decode.SvgDecoder
 import com.keyvalue.keycode.mobrain.VideoPreviewScreen
 import com.keyvalue.keycode.mobrain.client.ui.theme.MoBrainTheme
 import com.keyvalue.keycode.mobrain.ui.theme.transparentBlack
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ClientActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
 
+
         setContent {
+            val clientViewModel: ClientViewModel = viewModel()
+            clientViewModel.setContext(context = LocalContext.current)
             MoBrainTheme {
                 // A surface container using the 'background' color from the theme
-                ClientRoot()
+                ClientRoot(clientViewModel)
             }
         }
     }
 
     @Composable
-    private fun ClientRoot(clientViewModel: ClientViewModel = viewModel()) {
+    private fun ClientRoot(clientViewModel: ClientViewModel) {
         val gameUiState by clientViewModel.uiState.collectAsState()
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             val context = LocalContext.current
@@ -80,6 +89,7 @@ fun JoyStick(name: String, modifier: Modifier = Modifier, context: Context, clie
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 private fun ControllerView(context: Context, clientViewModel: ClientViewModel) {
     Box(
@@ -87,8 +97,17 @@ private fun ControllerView(context: Context, clientViewModel: ClientViewModel) {
             .fillMaxSize()
             .background(color = Color.White)
     ) {
-        
-        EmptyVideoPreview(uri = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
+        val uri = remember {
+            mutableStateOf("")
+        }
+        LaunchedEffect(Unit) {
+
+        }
+//        if (clientViewModel.videoState != null && clientViewModel.videoState?.collectAsState() != null) EmptyVideoPreview(
+//            uri = Uri.parse(clientViewModel.videoState?.collectAsState()?.value?.path).toString()
+//        )
+
+
         var offsetX by remember { mutableStateOf(0f) }
         var offsetY by remember { mutableStateOf(0f) }
         Column(
@@ -107,13 +126,15 @@ private fun ControllerView(context: Context, clientViewModel: ClientViewModel) {
                     size = 150.dp,
                     dotSize = 60.dp,
                 ) { x: Float, y: Float ->
-                    Log.wtf("JoyStick", "$x, $y")
+
+                    clientViewModel.sendControllerState(x, y, "direction")
                 }
                 JoyStick(
                     Modifier.padding(0.dp),
                     size = 150.dp,
                     dotSize = 60.dp,
                 ) { x: Float, y: Float ->
+                    clientViewModel.sendControllerState(x, y, "camera")
                     Log.wtf("JoyStick", "$x, $y")
                 }
             }
