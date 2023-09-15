@@ -29,11 +29,11 @@
             android:screenOrientation="landscape"
             android:label="@string/title_activity_client"
             android:theme="@style/Theme.MoBrain">
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
         <activity
             android:name=".login.SelectModeActivity"
@@ -52,8 +52,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".ReceiverActivity"
             android:exported="true"
+            android:screenOrientation="landscape"
             android:label="@string/app_name"
             android:theme="@style/Theme.MoBrain"></activity>
     </application>

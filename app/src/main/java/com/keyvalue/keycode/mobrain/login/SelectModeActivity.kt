@@ -1,5 +1,6 @@
 package com.keyvalue.keycode.mobrain.login
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,11 +25,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.keyvalue.keycode.mobrain.R
+import com.keyvalue.keycode.mobrain.ReceiverActivity
+import com.keyvalue.keycode.mobrain.client.ClientActivity
 import com.keyvalue.keycode.mobrain.login.ui.theme.MoBrainTheme
 import com.keyvalue.keycode.mobrain.ui.theme.orangeButton
 
@@ -49,7 +53,7 @@ class SelectModeActivity : ComponentActivity() {
 @Composable
 fun MyScreen() {
     val gradientColors = listOf(Color(0xFFFD7E14), Color(0xFFEC4E20))
-
+val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -75,6 +79,8 @@ fun MyScreen() {
         Button(
             onClick = {
                 // Handle sender button click
+                context.startActivity(Intent(context, ClientActivity::class.java))
+
             },
             colors = ButtonDefaults.buttonColors(containerColor = orangeButton),
             modifier = Modifier
@@ -93,6 +99,8 @@ fun MyScreen() {
         Button(
             onClick = {
                 // Handle receiver button click
+                context.startActivity(Intent(context, ReceiverActivity::class.java))
+
             },
             colors = ButtonDefaults.buttonColors(containerColor = orangeButton),
             modifier = Modifier
