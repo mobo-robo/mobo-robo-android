@@ -25,7 +25,7 @@ class ControllerSocketService(var context: Context, var callback: VideoCallback)
         val data = mapOf("x" to x, "y" to y)
         Log.d("DATA SENDING", data.toString());
 
-        socket?.emit("control","DATAAA");
+        socket?.emit("control",data.toString()+ "event: " + event);
     }
 
     init {
@@ -73,11 +73,11 @@ class ControllerSocketService(var context: Context, var callback: VideoCallback)
     }
 
     fun updateMusicStatus(status: Boolean) {
-        socket?.emit("music", status);
+        socket?.emit("control", "music:"+status);
     }
 
     fun updateLightStatus(status: Boolean) {
-        socket?.emit("light", status);
+        socket?.emit("control", "light:" + status);
     }
 
 
