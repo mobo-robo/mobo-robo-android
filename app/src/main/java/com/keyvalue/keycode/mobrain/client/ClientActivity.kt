@@ -121,14 +121,7 @@ private fun ControllerView(context: Context, clientViewModel: ClientViewModel) {
                     .padding(vertical = 16.dp, horizontal = 5.dp),
                 horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
             ) {
-                JoyStick(
-                    Modifier.padding(0.dp),
-                    size = 150.dp,
-                    dotSize = 60.dp,
-                ) { x: Float, y: Float ->
 
-                    clientViewModel.sendControllerState(x, y, "direction")
-                }
                 JoyStick(
                     Modifier.padding(0.dp),
                     size = 150.dp,

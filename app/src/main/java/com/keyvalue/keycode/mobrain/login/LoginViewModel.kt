@@ -42,7 +42,7 @@ class LoginViewModel : ViewModel() {
 
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://6224-103-181-238-106.ngrok.io")
+            .baseUrl("https://a558-103-181-238-106.ngrok-free.app")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         apiService = retrofit.create(ApiService::class.java)

@@ -6,8 +6,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.hardware.camera2.CameraAccessException
+import android.hardware.camera2.CameraManager
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -47,6 +51,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.StyledPlayerView
+import com.google.gson.JsonParser
 import com.keyvalue.keycode.mobrain.Route.VIDEO_PREVIEW_ARG
 import com.keyvalue.keycode.mobrain.aurdino.ACTION_USB_PERMISSION
 import com.keyvalue.keycode.mobrain.aurdino.AurdinoHelpers
@@ -56,6 +61,7 @@ import com.keyvalue.keycode.mobrain.ui.theme.MoBrainTheme
 import com.keyvalue.keycode.mobrain.util.PreferenceHelper
 import io.socket.client.IO
 import io.socket.client.Socket
+import java.util.regex.Pattern
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -80,6 +86,7 @@ class ReceiverActivity : ComponentActivity() {
             };
             socket.on("onControl:${deviceIdHeader.get(0)}") { parameters ->
                 Log.d("controlle recevied", parameters.toString());
+               main("""${parameters.get(0).toString() }}""",applicationContext)
             };
 
         } catch (e: Exception) {
@@ -102,6 +109,93 @@ class ReceiverActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+    }
+}
+
+fun main(json:String,context: Context) {
+var patFound = false
+
+    val jsonString1 = """{"content":"{x=-0.01, y=-0.0}"}"""
+
+    // Second string
+    val jsonString2 = """{"content":"{x=-0.01, y=-0.0}event: camera"}"""
+
+    // Extract x and y from the first string
+    val pattern1 = Pattern.compile("""x=(-?\d+\.\d+), y=(-?\d+\.\d+)""")
+    val matcher1 = pattern1.matcher(jsonString1)
+    if (matcher1.find()) {
+        patFound = true
+        val x1 = matcher1.group(1).toDouble()
+        val y1 = matcher1.group(2).toDouble()
+        println("x1: $x1, y1: $y1")
+        var string: String = "$x1,$y1"
+        val pattern2 = Pattern.compile("""event: (\w+)""")
+        val matcher2 = pattern2.matcher(jsonString2)
+        if (matcher2.find()) {
+            val event = matcher2.group(1)
+            println("event: $event")
+        }
+    }
+    if(!patFound)
+    {
+        val jsonString = """{"content":"light:true"}"""
+
+        // Extract "light" and "true" from the "content" field
+        val pattern = Pattern.compile("""content:"(.*?)":(true|false)""")
+        val matcher = pattern.matcher(jsonString)
+        if (matcher.find()) {
+            val key = matcher.group(1)
+            val value = matcher.group(2)
+            println("$key: $value")
+            if(key=="music")
+            {                var toneGenerator = ToneGenerator(AudioManager.STREAM_ALARM, 100)
+
+                if(value=="true")
+            // Adjust volume as needed
+                toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP2, 200)
+            else
+                    toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP2, 10)
+// Adjust duration as needed
+
+            }
+            else
+            {
+                var cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                var cameraId:String? = null
+                try {
+                    val cameraList = cameraManager.cameraIdList
+                    if (cameraList.isNotEmpty()) {
+                      cameraId = cameraList[0] // Use the first camera by default
+                    }
+                } catch (e: CameraAccessException) {
+                    e.printStackTrace()
+                }
+
+
+
+                // Toggle the flashlight when a button is clicked
+
+                   if(value=="true")
+                       cameraId?.let { cameraManager.setTorchMode(it, true) }
+                else
+                       cameraId?.let { cameraManager.setTorchMode(it, false) }
+
+
+
+            }
+        }
+    }
+
+    // Extract event from the second string
+
+
+
+    // Print the extracted values
+
 }
 
 object Route {
@@ -199,6 +293,18 @@ suspend fun Context.getCameraProvider(): ProcessCameraProvider = suspendCoroutin
 fun setUpUSB(context: Context) {
     val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
 
+
+    val usbDevices: HashMap<String, UsbDevice> = usbManager.getDeviceList()
+    if (!usbDevices.isEmpty()) {
+        for (entry in usbDevices) {
+            val pi = PendingIntent.getBroadcast(
+                context, 0,
+                Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE
+            )
+            usbManager.requestPermission(entry.value, pi)
+        }
+    }
+
     val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         //Broadcast Receiver to automatically start and stop the Serial connection.
         override fun onReceive(context: Context, intent: Intent) {
@@ -231,16 +337,6 @@ fun setUpUSB(context: Context) {
         }
     }
     context.registerReceiver(broadcastReceiver, IntentFilter(ACTION_USB_PERMISSION))
-    val usbDevices: HashMap<String, UsbDevice> = usbManager.getDeviceList()
-    if (!usbDevices.isEmpty()) {
-        for (entry in usbDevices) {
-            val pi = PendingIntent.getBroadcast(
-                context, 0,
-                Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE
-            )
-            usbManager.requestPermission(entry.value, pi)
-        }
-    }
 }
 
 @Composable
